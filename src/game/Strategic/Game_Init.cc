@@ -213,8 +213,6 @@ void InitNewGame()
 	ClearTacticalMessageQueue();
 	FreeGlobalMessageList(); // Clear mapscreen messages
 
-	InitScriptingEngine();
-
 	if (gubScreenCount == 0)
 	{ // Our first time, go into laptop
 		InitLaptopAndLaptopScreens();
