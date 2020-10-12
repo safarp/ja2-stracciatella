@@ -91,18 +91,102 @@ extern Observable<INT16, INT16, INT8, INT16, STRUCTURE*, UINT32, BOOLEAN_S*> Bef
   * @ingroup observables
   */
 extern Observable<INT16, INT16, INT8, INT16, STRUCTURE*, UINT8, BOOLEAN> OnStructureDamaged;
+
+/**
+ * Callback when we are about to drop from strategic layer to tactical. Implement here if you want to the scripted
+ * actions to run as soon as we enter tactical.
+ */
 extern Observable<> OnEnterTacticalScreen;
+
+/**
+ * Hook to the screen handle function of strategic screen. This is called whenever the screen changes.
+ */
 extern Observable<> OnHandleStrategicScreen;
+
+/**
+ * Callback when a new campaign is started. This is the place for one-time initialization.
+ */
 extern Observable<> OnInitNewCampaign;
+
+/**
+ * Callback when a merc is hired and add to the team. You can add items, modify soldier attributes, etc.
+ * @param pointer to the soldier just hired
+ */
 extern Observable<SOLDIERTYPE*> OnMercHired;
+
+/**
+ * Callback when an event is due and to be handled. Implement handlers here if custom strategic events are added.
+ * @param the event to be handled
+ * @param set to true if the event should not be further processed by the base game
+ */
 extern Observable<STRATEGICEVENT*, BOOLEAN_S*> OnStrategicEvent;
+
+/**
+ * Allows to override the player progress calculation.
+ * @param the progress percentage calculated by the base game. This can be adjusted or overridden.
+ */
 extern Observable<UINT8_S*> OnCalcPlayerProgress;
+
+/**
+ * Give the reason on why time compression is disallowed. You can show a pop-up, play a quote, etc
+ * @param set to true to skip base game logic
+ * @see AllowedToTimeCompress
+ */
 extern Observable<BOOLEAN_S*> OnTimeCompressDisallowed;
+
+/**
+ * Callback every morning to check quests' statuses..
+ * @param the current day
+ * @param set to true to skip base game checks
+ */
 extern Observable<UINT32, BOOLEAN_S*> OnCheckQuests;
+
+/**
+ * Callback when a quest is completed.
+ * @param the Quest ID
+ * @param sector X
+ * @param sector Y
+ * @param whether or not to write an update to the laptop history page
+ */
 extern Observable<UINT8, INT16, INT16, BOOLEAN> OnQuestEnded;
+
+/**
+ * Callback when a NPC does an action according to the .npc script, right before the base game logic is executed.
+ * @param profile ID of the NPC
+ * @param action code of what NPC is doing; one of the NPC_ACTION_ enums
+ * @param a soldier quote associated; the actual meaning depends on context
+ * @param set to true to indicate no further processing is needed
+ */
 extern Observable<UINT8, UINT16, UINT8, BOOLEAN_S*> OnNPCDoAction;
+
+/**
+ * Callback when we are about to enter a sector. This happens after PrepareSector. We have all soldiers and objects ready.
+ * @param sector X
+ * @param sector Y
+ * @param sector Z
+ */
 extern Observable<INT16, INT16, INT8> OnEnterSector;
+
+/**
+ * Callback when an email is about to be added to the player's inbox
+ * @param Email offset - the offset to the text record in email.edt
+ * @param Email length - the number of lines in email.edt to use
+ * @param Time in world-minutes, of when the email is sent
+ * @param ID of the sender; it should be a value from the email sender enum
+ * @param whether or not the email is already mark read when added
+ * @param first data field (e.g. merc profile ID) for certain templated emails
+ * @param second data field (e.g. money amount) for certain templated emails
+ * @param set to true to cancel adding the email
+ */
 extern Observable<INT32, INT32, INT32, UINT8, BOOLEAN, INT32, UINT32, BOOLEAN_S*> OnAddEmail;
+
+/**
+ * When a soldier picks or receives an item
+ * @param the soldier getting the item
+ * @param the item being picked up
+ * @param grid no of the soldier
+ * @param level (on ground or elevated, in tactical) of the soldier
+ */
 extern Observable<SOLDIERTYPE*, OBJECTTYPE*, INT16, INT8> OnSoldierGotItem;
 
 /**
@@ -166,6 +250,11 @@ SECTORINFO* GetSectorInfo(std::string sectorID);
  */
 UNDERGROUND_SECTORINFO* GetUndergroundSectorInfo(std::string sectorID);
 
+/**
+ * Retrums the StrategicMapElement of the sector
+ * @param sectorID
+ * @return
+ */
 StrategicMapElement* GetStrategicMapElement(std::string sectorID);
 
 BOOLEAN SetThisSectorAsPlayerControlled(INT16 sMapX, INT16 sMapY, INT8 bMapZ, BOOLEAN fContested);
@@ -209,9 +298,26 @@ void CenterAtGridNo(INT16 sGridNo, bool fForce);
 void TriggerNPCRecord(UINT8 ubTriggerNPC, UINT8 record);
 void StrategicNPCDialogue(UINT8 ubProfileID, UINT16 usQuoteNum);
 BOOLEAN TacticalCharacterDialogue(const SOLDIERTYPE* pSoldier, UINT16 usQuoteNum);
+
+/**
+ * Closes the dialogue menu with an NPC.
+ */
 void DeleteTalkingMenu();
 
-void AddEveryDayStrategicEvent_(UINT8 ubCallbackID, UINT32  uiStartMin, UINT32 uiParam);
+/**
+ * Adds a recurring events that happens at the same time every day.
+ * @param ubCallbackID strategic event ID
+ * @param uiStartMin the time (minutes of day) that the event
+ * @param uiParam a parameter that will be passed to the event handler
+ */
+void AddEveryDayStrategicEvent_(UINT8 ubCallbackID, UINT32 uiStartMin, UINT32 uiParam);
+
+/**
+ * Adds an one-off strategic event
+ * @param ubCallbackID strategic event ID
+ * @param uiMinStamp earliest time (in world-seconds) that this event will be processed
+ * @param uiParam a parameter that will be passed to the event handler
+ */
 void AddStrategicEvent_(UINT8 ubCallbackID, UINT32 uiMinStamp, UINT32);
 UINT32 GetWorldTotalMin();
 UINT32 GetWorldTotalSeconds();
