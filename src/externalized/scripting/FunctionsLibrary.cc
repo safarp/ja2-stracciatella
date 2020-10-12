@@ -1,10 +1,14 @@
 #include "FunctionsLibrary.h"
 #include "Campaign_Types.h"
+#include "Dialogue_Control.h"
+#include "Game_Event_Hook.h"
 #include "Handle_Items.h"
 #include "Item_Types.h"
 #include "Items.h"
+#include "Overhead.h"
 #include "Queen_Command.h"
 #include "SaveLoadGameStates.h"
+#include "Soldier_Profile.h"
 #include "StrategicMap.h"
 #include <stdexcept>
 #include <string>
@@ -20,14 +24,24 @@ std::string GetCurrentSector()
 	return str.to_std_string();
 }
 
-SECTORINFO* GetSectorInfo(const std::string sectorID)
+std::tuple<int, int, int> GetCurrentSectorLoc()
+{
+	return std::make_tuple(gWorldSectorX, gWorldSectorY, gbWorldSectorZ);
+}
+
+static UINT8 ToSectorID(const std::string sectorID)
 {
 	if (!IS_VALID_SECTOR_SHORT_STRING(sectorID.c_str()))
 	{
 		ST::string err = ST::format("The given sectorID ('{}') is invalid", sectorID);
 		throw std::runtime_error(err.to_std_string());
 	}
-	UINT8 ubSector = SECTOR_FROM_SECTOR_SHORT_STRING(sectorID.c_str());
+	return SECTOR_FROM_SECTOR_SHORT_STRING(sectorID.c_str());
+}
+
+SECTORINFO* GetSectorInfo(const std::string sectorID)
+{
+	UINT8 ubSector = ToSectorID(sectorID);
 	return &(SectorInfo[ubSector]);
 }
 
@@ -45,6 +59,12 @@ UNDERGROUND_SECTORINFO* GetUndergroundSectorInfo(const std::string sectorID)
 
 	UINT8 ubSector = SECTOR_FROM_SECTOR_SHORT_STRING(stSector.c_str());
 	return FindUnderGroundSector(SECTORX(ubSector), SECTORY(ubSector), ubSectorZ);
+}
+
+StrategicMapElement* GetStrategicMapElement(const std::string sectorID)
+{
+	UINT8 index = SECTOR_INFO_TO_STRATEGIC_INDEX(ToSectorID(sectorID));
+	return &(StrategicMap[index]);
 }
 
 OBJECTTYPE* CreateItem(const UINT16 usItem, const INT8 bStatus)
@@ -101,4 +121,76 @@ void PutGameStates(const std::string key, ExtraGameStatesTable const states)
 		else if (auto *f = std::get_if<float>(&v)) storables[k] = *f;
 	}
 	g_gameStates.Set(ST::format("scripts:{}", key), storables);
+}
+
+MERCPROFILESTRUCT* GetMercProfile(const UINT8 ubProfileID)
+{
+	return &(GetProfile(ubProfileID));
+}
+
+void CenterAtGridNo(const INT16 sGridNo, const bool fForce)
+{
+	InternalLocateGridNo(sGridNo, fForce);
+}
+
+void StrategicNPCDialogue(UINT8 const ubProfileID, UINT16 const usQuoteNum)
+{
+	CharacterDialogue(ubProfileID, usQuoteNum, GetExternalNPCFace(ubProfileID), DIALOGUE_EXTERNAL_NPC_UI, FALSE, true);
+}
+
+std::vector<SOLDIERTYPE*> ListSoldiersFromTeam(UINT8 const ubTeamID)
+{
+	std::vector<SOLDIERTYPE*> soldiers;
+	FOR_EACH_IN_TEAM(s, ubTeamID) soldiers.push_back(s);
+	return soldiers;
+}
+
+void AddEveryDayStrategicEvent_(UINT8 const ubCallbackID, UINT32 const uiStartMin, UINT32 const uiParam)
+{
+	BOOLEAN result = AddEveryDayStrategicEvent((StrategicEventKind)ubCallbackID, uiStartMin, uiParam);
+	if (!result)
+	{
+		SLOGW(ST::format("Failed to add daily strategic event {}", ubCallbackID));
+	}
+}
+
+GROUP* CreateNewEnemyGroupDepartingSector(std::string const sectorID, UINT8 const ubNumAdmins, UINT8 const ubNumTroops, UINT8 const ubNumElites)
+{
+	UINT32 uiSector = ToSectorID(sectorID);
+	return CreateNewEnemyGroupDepartingFromSector(uiSector, ubNumAdmins, ubNumTroops, ubNumElites);
+}
+
+void AddStrategicEvent_(UINT8 const ubCallbackID, UINT32 const uiMinStampSeconds, UINT32 const uiParams)
+{
+	BOOLEAN result = AddStrategicEventUsingSeconds((StrategicEventKind)ubCallbackID, uiMinStampSeconds, uiParams);
+	if (!result)
+	{
+		SLOGW(ST::format("Failed to add one time strategic event {}", ubCallbackID));
+	}
+}
+
+void StartQuest(UINT8 ubQuest, INT16 sSectorX, INT16 sSectorY);
+void StartQuest_(UINT8 const ubQuestID, const std::string sectorID)
+{
+	INT16 x = -1, y = -1;
+	if (!sectorID.empty())
+	{
+		UINT8 ubSectorID = ToSectorID(sectorID);
+		x = SECTORX(ubSectorID);
+		y = SECTORY(ubSectorID);
+	}
+	StartQuest(ubQuestID, x, y);
+}
+
+void EndQuest(UINT8 ubQuest, INT16 sSectorX, INT16 sSectorY);
+void EndQuest_(UINT8 const ubQuestID, const std::string sectorID)
+{
+	INT16 x = -1, y = -1;
+	if (!sectorID.empty())
+	{
+		UINT8 ubSectorID = ToSectorID(sectorID);
+		x = SECTORX(ubSectorID);
+		y = SECTORY(ubSectorID);
+	}
+	EndQuest(ubQuestID, x, y);
 }
