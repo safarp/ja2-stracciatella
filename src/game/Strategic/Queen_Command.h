@@ -3,6 +3,7 @@
 
 #include "Campaign_Types.h"
 #include "JA2Types.h"
+#include "Observable.h"
 #include "Strategic_Movement.h"
 
 
@@ -44,5 +45,7 @@ BOOLEAN PlayerSectorDefended( UINT8 ubSectorID );
 BOOLEAN OnlyHostileCivsInSector(void);
 
 extern INT16 gsInterrogationGridNo[3];
+
+extern Observable<const SOLDIERTYPE*> OnSoldierDeath;
 
 #endif

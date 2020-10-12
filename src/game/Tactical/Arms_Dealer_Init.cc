@@ -13,7 +13,7 @@
 #include "Scheduling.h"
 #include "MemMan.h"
 #include "Items.h"
-
+#include "Observable.h"
 #include "ContentManager.h"
 #include "DealerInventory.h"
 #include "DealerModel.h"
@@ -45,6 +45,7 @@ UINT8 gubLastSpecialItemAddedAtElement = 255;
 ARMS_DEALER_STATUS gArmsDealerStatus[ NUM_ARMS_DEALERS ];
 DEALER_ITEM_HEADER gArmsDealersInventory[ NUM_ARMS_DEALERS ][ MAXITEMS ];
 
+Observable<> OnAdjustDealersInventory;
 
 static void AdjustCertainDealersInventory(void);
 static void InitializeOneArmsDealer(ArmsDealerID);
@@ -489,6 +490,8 @@ static void AdjustCertainDealersInventory(void)
 	{
 		GuaranteeAtLeastXItemsOfIndex( ARMS_DEALER_FRANZ, VIDEO_CAMERA, 1 );
 	}
+    
+    OnAdjustDealersInventory();
 }
 
 

@@ -1381,6 +1381,7 @@ static void UpdatePausedStatesDueToTimeCompression(void);
 static void UpdateStatusOfMapSortButtons(void);
 static void UpdateTheStateOfTheNextPrevMapScreenCharacterButtons(void);
 
+Observable<> OnHandleStrategicScreen = {};
 
 ScreenID MapScreenHandle(void)
 try
@@ -1518,6 +1519,7 @@ try
 
 		LoadCharacters();
 
+		OnHandleStrategicScreen();
 
 		// set up regions
 		MSYS_DefineRegion( &gMapViewRegion, MAP_VIEW_START_X + MAP_GRID_X, MAP_VIEW_START_Y + MAP_GRID_Y,MAP_VIEW_START_X + MAP_VIEW_WIDTH+MAP_GRID_X-1, MAP_VIEW_START_Y + MAP_VIEW_HEIGHT-1 + 8, MSYS_PRIORITY_HIGH - 3,
@@ -6468,10 +6470,14 @@ static void CreateDestroyMapCharacterScrollButtons(void)
 	}
 }
 
+Observable<BOOLEAN_S*> OnTimeCompressDisallowed = {};
 
-
-void TellPlayerWhyHeCantCompressTime( void )
+void TellPlayerWhyHeCantCompressTime()
 {
+	BOOLEAN_S handled = false;
+	OnTimeCompressDisallowed(&handled);
+	if (handled) return;
+
 	// if we're locked into paused time compression by some event that enforces that
 	if ( PauseStateLocked() )
 	{

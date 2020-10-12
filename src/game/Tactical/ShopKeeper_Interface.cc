@@ -67,6 +67,7 @@
 #include "MagazineModel.h"
 #include "WeaponModels.h"
 #include "policy/GamePolicy.h"
+#include "Observable.h"
 
 #include <string_theory/format>
 #include <string_theory/string>
@@ -307,6 +308,8 @@ static BOOLEAN gfPerformTransactionInProgress = FALSE;
 
 static BOOLEAN gfCommonQuoteUsedThisSession[NUM_COMMON_SK_QUOTES];
 
+
+Observable<ArmsDealerID, INT16> OnItemPurchased = {};
 
 // Enums for possible evaluation results
 enum
@@ -3400,6 +3403,8 @@ static void MoveAllArmsDealersItemsInOfferAreaToPlayersOfferArea(void)
 					// set a special flag
 					gArmsDealerStatus[ gbSelectedArmsDealerID ].ubSpecificDealerFlags |= ARMS_DEALER_FLAG__FRANZ_HAS_SOLD_VIDEO_CAMERA_TO_PLAYER;
 				}
+                
+                OnItemPurchased(gbSelectedArmsDealerID, a->sItemIndex);
 			}
 
 			//Remove the items out of the dealers inventory
