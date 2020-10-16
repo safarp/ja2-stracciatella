@@ -1,0 +1,126 @@
+[
+    // BIFF
+    {
+        "profileID": 40,
+        "bioIndex": 0,
+        "quotes": [
+             { "type": "ADVERTISE",  "quoteID": 47 }                                     // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_BIFF
+            ,{ "type": "MERC_DEAD",  "quoteID": 28 }                                     // SPECK_QUOTE_ALTERNATE_OPENING_TAG_BIFF_IS_DEAD
+            ,{ "type": "CROSS_SELL", "quoteID": 63, "profileID": 46 /* LARRY_NORMAL */}  // SPECK_QUOTE_PLAYERS_HIRES_BIFF_SPECK_PLUGS_LARRY
+            ,{ "type": "CROSS_SELL", "quoteID": 63, "profileID": 47 /* LARRY_DRUNK  */}  // SPECK_QUOTE_PLAYERS_HIRES_BIFF_SPECK_PLUGS_LARRY
+            ,{ "type": "CROSS_SELL", "quoteID": 64, "profileID": 44 /* FLO */         }  // SPECK_QUOTE_PLAYERS_HIRES_BIFF_SPECK_PLUGS_FLO
+        ]
+    },
+    // HAYWIRE
+    {
+        "profileID": 41,
+        "bioIndex": 1,
+        "quotes": [
+             { "type": "ADVERTISE",  "quoteID": 48 }                              // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_HAYWIRE
+            ,{ "type": "MERC_DEAD",  "quoteID": 29 }                              // SPECK_QUOTE_ALTERNATE_OPENING_TAG_HAYWIRE_IS_DEAD
+            ,{ "type": "CROSS_SELL", "quoteID": 65, "profileID": 43 /* RAZOR */ } // SPECK_QUOTE_PLAYERS_HIRES_HAYWIRE_SPECK_PLUGS_RAZOR
+        ]
+    },
+    // GASKET
+    {
+        "profileID": 42,
+        "bioIndex": 2,
+        "quotes": [
+             { "type": "ADVERTISE", "quoteID": 49 }        // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_GASKET
+            ,{ "type": "MERC_DEAD", "quoteID": 30 }        // SPECK_QUOTE_ALTERNATE_OPENING_TAG_GASKET_IS_DEAD
+        ]
+    },
+    // RAZOR
+    {
+        "profileID": 43,
+        "bioIndex": 3,
+        "quotes": [
+             { "type": "ADVERTISE",  "quoteID": 50 }                                // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_RAZOR
+            ,{ "type": "MERC_DEAD",  "quoteID": 31 }                                // SPECK_QUOTE_ALTERNATE_OPENING_TAG_RAZOR_IS_DEAD
+            ,{ "type": "CROSS_SELL", "quoteID": 66, "profileID": 41 /* HAYWIRE */ } // SPECK_QUOTE_PLAYERS_HIRES_RAZOR_SPECK_PLUGS_HAYWIRE
+        ]
+    },
+    // FLO
+    {
+        "profileID": 44,
+        "bioIndex": 4,
+        "quotes": [
+             { "type": "ADVERTISE",  "quoteID": 51 }                             // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_FLO
+            ,{ "type": "CROSS_SELL", "quoteID": 67, "profileID": 40 /* BIFF */ } // SPECK_QUOTE_PLAYERS_HIRES_FLO_SPECK_PLUGS_BIFF
+             /*
+              * FLO has situational MERC_DEAD quotes, which depends on and may have an
+              * effect on BIFF, and that is handled as a special case in code
+              */
+        ]
+    },
+    // GUMPY
+    {
+        "profileID": 45,
+        "bioIndex": 5,
+        "quotes" : [
+             { "type": "ADVERTISE", "quoteID": 52 }             // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_GUMPY},
+            ,{ "type": "MERC_DEAD", "quoteID": 35 }             // SPECK_QUOTE_ALTERNATE_OPENING_TAG_GUMPY_IS_DEAD
+        ]
+    },
+    // BUBBA
+    {
+        "profileID": 50,
+        "bioIndex": 10,
+        "quotes" : [
+             { "type": "ADVERTISE", "quoteID": 56 }             // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_BUBBA
+            ,{ "type": "MERC_DEAD", "quoteID": 40 }             // SPECK_QUOTE_ALTERNATE_OPENING_TAG_BUBBA_IS_DEAD
+        ]
+    },
+    // LARRY_NORMAL
+    {
+        /*
+         * By default Larry is sober (LARRY_NORMAL).
+         * We will handle his relapse in the code, and we will replace the profileID with LARRY_DRUNK (47)
+         */
+        "profileID": 46,
+        "bioIndex": 6,
+        "quotes" : [
+             { "type": "ADVERTISE",  "quoteID": 53 }                              // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_LARRY
+            ,{ "type": "MERC_DEAD",  "quoteID": 36 }                              // SPECK_QUOTE_ALTERNATE_OPENING_TAG_LARRY_IS_DEAD
+            ,{ "type": "CROSS_SELL", "quoteID": 63, "profileID": 40 /* BIFF */ }  // SPECK_QUOTE_PLAYERS_HIRES_BIFF_SPECK_PLUGS_LARRY
+        ]
+    },
+    // NUMB
+    {
+        "profileID": 49,
+        "bioIndex": 9,
+        "quotes" : [
+               { "type": "ADVERTISE", "quoteID": 55 }                 // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_NUMB
+              ,{ "type": "MERC_DEAD", "quoteID": 39 }                 // SPECK_QUOTE_ALTERNATE_OPENING_TAG_NUMB_IS_DEAD
+        ]
+    },
+    // COUGAR
+    {
+        "profileID": 48,
+        "bioIndex": 8,
+        "quotes" : [
+               { "type": "ADVERTISE",  "quoteID": 54 }                // SPECK_QUOTE_PLAYER_NOT_DOING_ANYTHING_SPECK_SELLS_COUGER
+              ,{ "type": "MERC_DEAD",  "quoteID": 38 }                // SPECK_QUOTE_ALTERNATE_OPENING_TAG_COUGER_IS_DEAD
+        ]
+    },
+    // GASTON
+    {
+        "profileID": 58,
+        "bioIndex": 11,
+        "quotes": [
+             { "type": "ADVERTISE",  "quoteID": 94 }                             // SPECK_QUOTE_ADVERTISE_GASTON
+            ,{ "type": "MERC_DEAD",  "quoteID": 96 }                             // SPECK_QUOTE_GASTON_DEAD,
+            ,{ "type": "CROSS_SELL", "quoteID": 98, "profileID": 44 /* FLO */ }  // SPECK_QUOTE_PLAYER_HIRES_GASTON
+        ]
+    },
+    // STOGIE
+    {
+        "profileID": 59,
+        "bioIndex": 12,
+        "quotes": [
+             { "type": "ADVERTISE",  "quoteID": 95 }                             // SPECK_QUOTE_ADVERTISE_STOGIE
+            ,{ "type": "MERC_DEAD",  "quoteID": 97 }                             // SPECK_QUOTE_STOGIE_DEAD
+            ,{ "type": "CROSS_SELL", "quoteID": 99, "profileID": 40 /* BIFF */ } // SPECK_QUOTE_PLAYER_HIRES_STOGIE
+        ]
+    }
+]
