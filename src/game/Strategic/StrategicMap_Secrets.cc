@@ -45,7 +45,7 @@ BOOLEAN IsSecretFoundAt(UINT8 const sectorID)
 		// The game always try to find secrets at J9 and K4, but they
 		// may not be present in a modded set up. So we will just
 		// return TRUE and continue.
-		STLOGW("No secret defined at sector {}", sectorID);
+		STLOGW("No secret defined at sector {}", SECTOR_SHORT_STRING(sectorID));
 		return TRUE;
 	}
 	return isSecretFound[sectorID];
