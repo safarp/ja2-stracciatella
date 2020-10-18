@@ -1,3 +1,6 @@
+TRUE = 1
+FALSE = 0
+
 Items = {
     SUNGOGGLE = 212,
     CANTEEN   = 214,
@@ -8,6 +11,11 @@ Visibility = {
 	HIDDEN_IN_OBJECT     =  -2,
 	INVISIBLE            =  -1,
 	VISIBLE              =   1,
+}
+
+TacticalStatusFlags = {
+    INCOMBAT = 0x000040000,
+    ENGAGED_IN_CONV = 0x000800000,
 }
 
 SectorFlags = {
@@ -85,6 +93,20 @@ SoldierBodyTypes = {
     JEEP = 27,
 }
 
+SoldierAnimState = {
+    STAND_FALLFORWARD_STOP = -1, -- TODO: to be added
+}
+
+MercTypes = {
+    PLAYER_CHARACTER = 0,
+    AIM_MERC = 1,
+    MERC = 2,
+    NPC = 3,
+    EPC = 4,
+    NPC_WITH_UNEXTENDABLE_CONTRACT = 5,
+    VEHICLE = 6,
+}
+
 MercProfiles = {
     MIGUEL = 57,
     CARLOS = 58,
@@ -100,6 +122,11 @@ MercProfiles = {
     ELLIOT = 135,
 
     NO_PROFILE = 200,
+}
+
+MercStatuses = {
+    MERC_OK = 0,
+    MERC_IS_DEAD = -5,
 }
 
 SkillTraits =  {
@@ -130,7 +157,7 @@ StrategicEventFrequencies = {
     QUEUED_EVENT = 5,
 };
 
-StrategicEventKinds = {
+EventTypes = {
     EVENT_CHECKFORQUESTS                                 =  4,
     EVENT_AIM_RESET_MERC_ANNOYANCE                       =  6,
     EVENT_BOBBYRAY_PURCHASE                              =  7,
@@ -188,8 +215,89 @@ DifficultyLevels = {
     DIF_LEVEL_HARD = 3,
 }
 
-GameSaveMmodes = {
+GameSaveModes = {
     DIF_CAN_SAVE = 0,
     DIF_IRON_MAN = 1,
     DIF_DEAD_IS_DEAD = 2,
+}
+
+QuestStatuses = {
+    QUESTNOTSTARTED = 0,
+    QUESTINPROGRESS = 1,
+    QUESTDONE = 2,
+}
+
+Bookmarks = {
+    AIM = 0,
+    BOBBYR = 1,
+    IMP = 2,
+    MERC = 3,
+    FUNERAL = 4,
+    FLORIST = 5,
+    INSURANCE = 6,
+    CANCEL_STRING = 7,
+}
+
+TransactionTypes = {
+    ACCRUED_INTEREST = 0,
+    ANONYMOUS_DEPOSIT = 1,
+    TRANSACTION_FEE = 2,
+    HIRED_MERC = 3,
+    BOBBYR_PURCHASE = 4,
+    PAY_SPECK_FOR_MERC = 5,
+    MEDICAL_DEPOSIT = 6,
+    IMP_PROFILE = 7,
+    PURCHASED_INSURANCE = 8,
+    REDUCED_INSURANCE = 9,
+    EXTENDED_INSURANCE = 10,
+    CANCELLED_INSURANCE = 11,
+    INSURANCE_PAYOUT = 12,
+    EXTENDED_CONTRACT_BY_1_DAY = 13,
+    EXTENDED_CONTRACT_BY_1_WEEK = 14,
+    EXTENDED_CONTRACT_BY_2_WEEKS = 15,
+    DEPOSIT_FROM_GOLD_MINE = 16,
+    DEPOSIT_FROM_SILVER_MINE = 17,
+    PURCHASED_FLOWERS = 18,
+    FULL_MEDICAL_REFUND = 19,
+    PARTIAL_MEDICAL_REFUND = 20,
+    NO_MEDICAL_REFUND = 21,
+    PAYMENT_TO_NPC = 22,
+    TRANSFER_FUNDS_TO_MERC = 23,
+    TRANSFER_FUNDS_FROM_MERC = 24,
+    TRAIN_TOWN_MILITIA = 25,
+    PURCHASED_ITEM_FROM_DEALER = 26,
+    MERC_DEPOSITED_MONEY_TO_PLAYER_ACCOUNT = 27,
+}
+
+HistoryTypes = {
+    ENTERED_HISTORY_MODE = 0,
+    HIRED_MERC_FROM_AIM = 1,
+    HIRED_MERC_FROM_MERC = 2,
+    MERC_KILLED = 3,
+    SETTLED_ACCOUNTS_AT_MERC = 4,
+    MERC_FIRED = 13,
+    MERC_QUIT = 14,
+    QUEST_STARTED = 15,
+    QUEST_FINISHED = 16,
+}
+
+BattleSound = {
+    BATTLE_SOUND_OK1 = 0,
+    BATTLE_SOUND_OK2 = 1,
+    BATTLE_SOUND_COOL1 = 2,
+    BATTLE_SOUND_CURSE1 = 3,
+    BATTLE_SOUND_HIT1 = 4,
+    BATTLE_SOUND_HIT2 = 5,
+    BATTLE_SOUND_LAUGH1 = 6,
+    BATTLE_SOUND_ATTN1 = 7,
+    BATTLE_SOUND_DIE1 = 8,
+    BATTLE_SOUND_HUMM = 9,
+    BATTLE_SOUND_NOTHING = 10,
+    BATTLE_SOUND_GOTIT = 11,
+    BATTLE_SOUND_LOWMARALE_OK1 = 12,
+    BATTLE_SOUND_LOWMARALE_OK2 = 13,
+    BATTLE_SOUND_LOWMARALE_ATTN1 = 14,
+    BATTLE_SOUND_LOCKED = 15,
+    BATTLE_SOUND_ENEMY = 16,
+    NUM_MERC_BATTLE_SOUNDS = 17,
 }

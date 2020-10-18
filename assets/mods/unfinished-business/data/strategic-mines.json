@@ -1,7 +1,7 @@
 [
     { // Varraz
         "entranceSector": "I13",
-        "associatedTownId": 1,
+        "associatedTownId": 2,
         "mineType": "GOLD_MINE",
         "minimumMineProduction": 0, // abandoned
         "mineSectors": [
