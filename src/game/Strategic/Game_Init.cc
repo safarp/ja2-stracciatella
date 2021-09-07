@@ -67,6 +67,11 @@ void InitScriptingEngine();
 
 UINT8			gubScreenCount=0;
 
+// One-time initialization, that should be run when on new campaign or load game
+void InitGameEngine()
+{
+	InitMapSecrets();
+}
 
 static void InitNPCs()
 {
@@ -167,7 +172,7 @@ void InitStrategicLayer( void )
 	InitializeSAMSites();
 
 	// make Orta, Tixa, SAM sites not found
-	InitMapSecrets();
+	ResetMapSecrets();
 
 
 	// free up any leave list arrays that were left allocated

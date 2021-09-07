@@ -38,6 +38,7 @@
 #include <string_theory/string>
 
 #include <stdexcept>
+#include "Game_Init.h"
 
 
 ScreenID guiCurrentScreen = ERROR_SCREEN; // XXX TODO001A had no explicit initialisation
@@ -80,6 +81,9 @@ void InitializeGame(void)
 
 	//Initialize the Game options ( Gun nut, scifi and dif. levels
 	InitGameOptions();
+
+	//Perform one-time initialization of game engine components
+	InitGameEngine();
 
 	// preload mapscreen graphics
 	HandlePreloadOfMapGraphics( );
