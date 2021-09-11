@@ -7,6 +7,7 @@
 #include <sol/sol.hpp>  // this needs to be included first
 #include "STStringHandler.h"
 
+#include "Arms_Dealer_Init.h"
 #include "Campaign_Types.h"
 #include "ContentManager.h"
 #include "FileMan.h"
@@ -294,12 +295,24 @@ static void RegisterUserTypes()
 		"ubPlayerBeenToMercSiteStatus", &LaptopSaveInfoStruct::ubPlayerBeenToMercSiteStatus
 		);
 
+	lua.new_usertype<DEALER_ITEM_HEADER>("DEALER_ITEM_HEADER",
+		"ubTotalItems", &DEALER_ITEM_HEADER::ubTotalItems,
+		"ubPerfectItems", &DEALER_ITEM_HEADER::ubPerfectItems,
+		"ubStrayAmmo", &DEALER_ITEM_HEADER::ubStrayAmmo,
+		"uiOrderArrivalTime", &DEALER_ITEM_HEADER::uiOrderArrivalTime,
+		"ubQtyOnOrder", &DEALER_ITEM_HEADER::ubQtyOnOrder,
+		"fPreviouslyEligible", &DEALER_ITEM_HEADER::fPreviouslyEligible
+		);
+
 	lua.new_usertype<BOOLEAN_S>("BOOLEAN_S",
 		"val", &BOOLEAN_S::val
 		);
 	lua.new_usertype<UINT8_S>("UINT8_S",
 		"val", &UINT8_S::val
 		);
+	lua.new_usertype<UINT32_S>("UINT32_S",
+		"val", &UINT32_S::val
+	)	;
 }
 
 static void RegisterGlobals()
@@ -360,8 +373,15 @@ static void RegisterGlobals()
 	lua.set_function("GetGameStates", GetGameStates);
 	lua.set_function("PutGameStates", PutGameStates);
 
-	lua.set_function("dofile",   []() { throw std::logic_error("dofile is not allowed. Use require instead"); });
-	lua.set_function("loadfile", []() { throw std::logic_error("loadfile is not allowed. Use require instead"); });
+	lua.set_function("DailyCheckOnItemQuantities", DailyCheckOnItemQuantities);
+	lua.set_function("GuaranteeAtLeastXItemsOfIndex", GuaranteeAtLeastXItemsOfIndex_);
+	lua.set_function("RemoveRandomItemFromDealerInventory", RemoveRandomItemFromDealerInventory);
+	lua.set_function("GetDealerInventory", GetDealerInventory);
+	lua.set_function("StartShopKeeperTalking", StartShopKeeperTalking);
+	lua.set_function("EnterShopKeeperInterfaceScreen", EnterShopKeeperInterfaceScreen);
+
+	lua.set_function("dofile",   []() { throw std::logic_error("dofile is not allowed. Use JA2Require instead"); });
+	lua.set_function("loadfile", []() { throw std::logic_error("loadfile is not allowed. Use JA2Require instead"); });
 
 	lua.set_function("___noop", []() {});
 	lua.set_function("RegisterListener", RegisterListener);
@@ -457,6 +477,9 @@ static void _RegisterListener(const std::string& observable, const std::string& 
 	else if (observable == "OnAddEmail")                 OnAddEmail.addListener(key, wrap<INT32, INT32, INT32, UINT8, BOOLEAN, INT32, UINT32, BOOLEAN_S*>(luaFunc));
 	else if (observable == "BeforeGameSaved")            BeforeGameSaved.addListener(key, wrap<>(luaFunc));
 	else if (observable == "OnGameLoaded")               OnGameLoaded.addListener(key, wrap<>(luaFunc));
+	else if (observable == "OnDealerInventoryUpdated")   OnDealerInventoryUpdated.addListener(key, wrap<>(luaFunc));
+	else if (observable == "OnItemTransacted")           OnItemTransacted.addListener(key, wrap<INT8, UINT16, BOOLEAN>(luaFunc));
+	else if (observable == "OnItemPriced")               OnItemPriced.addListener(key, wrap<INT8, UINT16, BOOLEAN, UINT32_S*>(luaFunc));
 	else {
 		ST::string err = ST::format("There is no observable named '{}'", observable);
 		throw std::logic_error(err.to_std_string());

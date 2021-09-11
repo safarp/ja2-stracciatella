@@ -1,4 +1,5 @@
 #include "FunctionsLibrary.h"
+#include "Arms_Dealer_Init.h"
 #include "Campaign_Types.h"
 #include "Dialogue_Control.h"
 #include "Game_Event_Hook.h"
@@ -193,4 +194,26 @@ void EndQuest_(UINT8 const ubQuestID, const std::string sectorID)
 		y = SECTORY(ubSectorID);
 	}
 	EndQuest(ubQuestID, x, y);
+}
+
+void GuaranteeAtLeastXItemsOfIndex(ArmsDealerID, UINT16, UINT8);
+void GuaranteeAtLeastXItemsOfIndex_(INT8 const bDealerID, UINT16 const usItemIndex, UINT8 const ubNumItems)
+{
+	GuaranteeAtLeastXItemsOfIndex((ArmsDealerID)bDealerID, usItemIndex, ubNumItems);
+}
+
+void RemoveRandomItemFromArmsDealerInventory(ArmsDealerID, UINT16, UINT8);
+void RemoveRandomItemFromDealerInventory(INT8 bDealerID, UINT16 usItemIndex, UINT8 ubHowMany)
+{
+	RemoveRandomItemFromArmsDealerInventory((ArmsDealerID)bDealerID, usItemIndex, ubHowMany);
+}
+
+std::vector<DEALER_ITEM_HEADER*> GetDealerInventory(UINT8 ubDealerID)
+{
+	std::vector<DEALER_ITEM_HEADER*> items{};
+	for (DEALER_ITEM_HEADER& i : gArmsDealersInventory[ubDealerID])
+	{
+		items.push_back(&i);
+	}
+	return items;
 }

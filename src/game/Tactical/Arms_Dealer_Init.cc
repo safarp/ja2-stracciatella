@@ -45,7 +45,7 @@ UINT8 gubLastSpecialItemAddedAtElement = 255;
 ARMS_DEALER_STATUS gArmsDealerStatus[ NUM_ARMS_DEALERS ];
 DEALER_ITEM_HEADER gArmsDealersInventory[ NUM_ARMS_DEALERS ][ MAXITEMS ];
 
-Observable<> OnAdjustDealersInventory;
+Observable<> OnDealerInventoryUpdated;
 
 static void AdjustCertainDealersInventory(void);
 static void InitializeOneArmsDealer(ArmsDealerID);
@@ -243,7 +243,7 @@ void LoadArmsDealerInventoryFromSavedGameFile(HWFILE const f, UINT32 const saveg
 
 
 static void ConvertCreatureBloodToElixir(void);
-static void DailyCheckOnItemQuantities(void);
+void DailyCheckOnItemQuantities();
 static void SimulateArmsDealerCustomer(void);
 
 
@@ -326,7 +326,7 @@ static void SimulateArmsDealerCustomer(void)
 }
 
 
-static void DailyCheckOnItemQuantities(void)
+void DailyCheckOnItemQuantities()
 {
 	UINT16  usItemIndex;
 	UINT8   ubMaxSupply;
@@ -490,13 +490,13 @@ static void AdjustCertainDealersInventory(void)
 	{
 		GuaranteeAtLeastXItemsOfIndex( ARMS_DEALER_FRANZ, VIDEO_CAMERA, 1 );
 	}
-    
-    OnAdjustDealersInventory();
+
+	OnDealerInventoryUpdated();
 }
 
 
 static UINT32 GetArmsDealerItemTypeFromItemNumber(UINT16 usItem);
-static void RemoveRandomItemFromArmsDealerInventory(ArmsDealerID, UINT16 usItemIndex, UINT8 ubHowMany);
+void RemoveRandomItemFromArmsDealerInventory(ArmsDealerID, UINT16 usItemIndex, UINT8 ubHowMany);
 
 
 static void LimitArmsDealersInventory(ArmsDealerID const ubArmsDealer, UINT32 uiDealerItemType, UINT8 ubMaxNumberOfItemType)
@@ -1567,7 +1567,7 @@ void RemoveItemFromArmsDealerInventory(ArmsDealerID const ubArmsDealer, UINT16 c
 }
 
 
-static void RemoveRandomItemFromArmsDealerInventory(ArmsDealerID const ubArmsDealer, UINT16 const usItemIndex, UINT8 ubHowMany)
+void RemoveRandomItemFromArmsDealerInventory(ArmsDealerID const ubArmsDealer, UINT16 const usItemIndex, UINT8 ubHowMany)
 {
 	UINT8 ubWhichOne;
 	UINT8 ubSkippedAlready;

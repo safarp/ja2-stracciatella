@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Arms_Dealer.h"
 #include "Facts.h"
+#include "Item_Types.h"
 #include "Types.h"
 #include "Observable.h"
 #include <variant>
@@ -37,6 +39,8 @@ struct StrategicMapElement;
 /*! \struct STRATEGICEVENT
     \brief An event to scheduled for process at a later time in game */
 struct STRATEGICEVENT;
+
+struct DEALER_ITEM_HEADER;
 
 /**
  * @defgroup observables Observables
@@ -115,6 +119,23 @@ extern Observable<> BeforeGameSaved;
  * Right after a game is loaded. This is the place to restore game states from a saved game.
  */
 extern Observable<> OnGameLoaded;
+
+/**
+ * When a dealer/shopkeeper's inventory has been updated
+ */
+extern Observable<> OnDealerInventoryUpdated;
+
+/**
+ * Calls for each item transferred from a dealer in a transaction
+ */
+extern Observable<INT8, INT16, BOOLEAN> OnItemTransacted;
+
+/**
+ * Called when an item is being priced by a shopkeeper.
+ * The basic calculation already done at this point, and this gives an opportunity to modify the
+ * final unit price, to give special discounts, etc.
+ */
+extern Observable<INT8, UINT16, BOOLEAN, UINT32_S*> OnItemPriced;
 
 /** @defgroup funclib-sectors Map sectors
  *  @brief Access and alter sectors' stratgic-level data
@@ -226,3 +247,10 @@ ExtraGameStatesTable GetGameStates(std::string key);
  * @param states a map of primitive types (string, numeric or boolean)
  */
 void PutGameStates(std::string key, ExtraGameStatesTable states);
+
+void DailyCheckOnItemQuantities();
+void GuaranteeAtLeastXItemsOfIndex_(INT8, UINT16, UINT8);
+void RemoveRandomItemFromDealerInventory(INT8 bArmsDealerID, UINT16 usItemIndex, UINT8 ubHowMany);
+std::vector<DEALER_ITEM_HEADER*> GetDealerInventory(UINT8 ubDealerID);
+BOOLEAN StartShopKeeperTalking(UINT16 usQuoteNum);
+void EnterShopKeeperInterfaceScreen(UINT8 ubArmsDealer);
