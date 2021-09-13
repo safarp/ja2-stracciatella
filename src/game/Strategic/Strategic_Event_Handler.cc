@@ -778,9 +778,12 @@ void HandleEarlyMorningEvents( void )
 				// ok, Devin's sector not loaded, so time to move!
 				// might be same sector as before, if so, oh well!
 				auto placement = GCM->getNpcPlacement(DEVIN);
-				UINT8 sector   = placement->pickPlacementSector();
-				gMercProfiles[DEVIN].sSectorX = SECTORX(sector);
-				gMercProfiles[DEVIN].sSectorY = SECTORY(sector);
+				INT16 sector   = placement->pickPlacementSector();
+				if (sector != -1)
+				{
+					gMercProfiles[DEVIN].sSectorX = SECTORX(sector);
+					gMercProfiles[DEVIN].sSectorY = SECTORY(sector);
+				}
 			}
 		}
 	}
@@ -797,11 +800,14 @@ void HandleEarlyMorningEvents( void )
 		// ok, HAMOUS's sector not loaded, so time to move!
 		// might be same sector as before, if so, oh well!
 		auto placement = GCM->getNpcPlacement(HAMOUS);
-		UINT8 sector   = placement->pickPlacementSector();
-		gMercProfiles[HAMOUS].sSectorX = SECTORX(sector);
-		gMercProfiles[HAMOUS].sSectorY = SECTORY(sector);
-		gMercProfiles[PROF_ICECREAM].sSectorX = SECTORX(sector);
-		gMercProfiles[PROF_ICECREAM].sSectorY = SECTORY(sector);
+		INT16 sector   = placement->pickPlacementSector();
+		if (sector != -1)
+		{
+			gMercProfiles[HAMOUS].sSectorX = SECTORX(sector);
+			gMercProfiles[HAMOUS].sSectorY = SECTORY(sector);
+			gMercProfiles[PROF_ICECREAM].sSectorX = SECTORX(sector);
+			gMercProfiles[PROF_ICECREAM].sSectorY = SECTORY(sector);
+		}
 	}
 
 	// Does Rat take off?
@@ -863,10 +869,12 @@ void HandleEarlyMorningEvents( void )
 		if ( gMercProfiles[ CARMEN ].sSectorX != gWorldSectorX || gMercProfiles[ CARMEN ].sSectorY != gWorldSectorY )
 		{
 			auto placement = GCM->getNpcPlacement(CARMEN);
-			UINT8 sector   = placement->pickPlacementSector();
-			gMercProfiles[CARMEN].sSectorX = SECTORX(sector);
-			gMercProfiles[CARMEN].sSectorY = SECTORY(sector);
-
+			INT16 sector = placement->pickPlacementSector();
+			if (sector != -1)
+			{
+				gMercProfiles[CARMEN].sSectorX = SECTORX(sector);
+				gMercProfiles[CARMEN].sSectorY = SECTORY(sector);
+			}
 			// he should have $5000... unless the player forgot to meet him
 			if (gMercProfiles[ CARMEN ].uiMoney < 5000)
 			{
