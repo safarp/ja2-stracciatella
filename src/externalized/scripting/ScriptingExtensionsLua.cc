@@ -364,6 +364,8 @@ static void RegisterGlobals()
 	lua.set_function("StrategicNPCDialogue", StrategicNPCDialogue);
 	lua.set_function("TacticalCharacterDialogue", TacticalCharacterDialogue);
 	lua.set_function("DeleteTalkingMenu", DeleteTalkingMenu);
+	lua.set_function("DoBasicMessageBox", DoBasicMessageBox);
+	lua.set_function("ExecuteTacticalTextBox", ExecuteTacticalTextBox_);
 	lua.set_function("PlayJA2SampleFromFile", PlayJA2SampleFromFile);
 	lua.set_function("DoMercBattleSound", DoMercBattleSound_);
 

@@ -6,6 +6,8 @@
 #include "Handle_Items.h"
 #include "Item_Types.h"
 #include "Items.h"
+#include "JAScreens.h"
+#include "MessageBoxScreen.h"
 #include "Overhead.h"
 #include "Queen_Command.h"
 #include "SaveLoadGameStates.h"
@@ -142,6 +144,18 @@ void StrategicNPCDialogue(UINT8 const ubProfileID, UINT16 const usQuoteNum)
 BOOLEAN DoMercBattleSound_(SOLDIERTYPE* const s, UINT8 const battle_snd_id)
 {
 	return DoMercBattleSound(s, (BattleSound)battle_snd_id);
+}
+
+void DoScreenIndependantMessageBox(const ST::string&, MessageBoxFlags, MSGBOX_CALLBACK);
+void DoBasicMessageBox(const ST::string text)
+{
+	DoScreenIndependantMessageBox(text, MSG_BOX_FLAG_OK, NULL);
+}
+
+void ExecuteTacticalTextBox(INT16 sLeftPosition, INT16 sTopPosition, const ST::string& pString);
+void ExecuteTacticalTextBox_(INT16 sLeftPosition, INT16 sTopPosition, ST::string pString)
+{
+	ExecuteTacticalTextBox(sLeftPosition, sTopPosition, pString);
 }
 
 std::vector<SOLDIERTYPE*> ListSoldiersFromTeam(UINT8 const ubTeamID)

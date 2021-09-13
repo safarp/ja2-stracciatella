@@ -317,6 +317,13 @@ void ChangeSoldierState(SOLDIERTYPE* pSoldier, UINT16 usNewState, UINT16 usStart
 UINT32 PlayJA2SampleFromFile(const char* szFileName, UINT32 ubVolume, UINT32 ubLoops, UINT32 uiPan);
 
 /**
+ * Pops up a basic message box - one that has OK only, no callback and returns to the current screen.
+ * @param text
+ */
+void DoBasicMessageBox(ST::string text);
+void ExecuteTacticalTextBox_(INT16 sLeftPosition, INT16 sTopPosition, ST::string pString);
+
+/**
  * Adds a recurring events that happens at the same time every day.
  * @param ubCallbackID strategic event ID
  * @param uiStartMin the time (minutes of day) that the event
