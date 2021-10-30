@@ -2179,7 +2179,7 @@ void TriggerNPCRecord(UINT8 const ubTriggerNPC, UINT8 const record)
 	NPCQuoteInfo const& q                = quotes[record];
 	bool         const  display_dialogue = q.ubQuoteNum != IRRELEVANT;
 
-	if (NPCConsiderQuote(ubTriggerNPC, 0, TRIGGER_NPC, record, 0, quotes))
+	if (true || NPCConsiderQuote(ubTriggerNPC, 0, TRIGGER_NPC, record, 0, quotes))
 	{
 		NPCTriggerNPC(ubTriggerNPC, record, TRIGGER_NPC, display_dialogue);
 	}
