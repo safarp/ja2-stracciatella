@@ -7,6 +7,7 @@
 #include "Item_Types.h"
 #include "Items.h"
 #include "JAScreens.h"
+#include "Laptop.h"
 #include "MessageBoxScreen.h"
 #include "Overhead.h"
 #include "Queen_Command.h"
@@ -235,4 +236,13 @@ std::vector<DEALER_ITEM_HEADER*> GetDealerInventory(UINT8 ubDealerID)
 		items.push_back(&i);
 	}
 	return items;
+}
+
+extern LaptopMode guiCurrentWWWMode;
+extern LaptopMode guiCurrentLaptopMode;
+
+void SetLaptopModes(UINT32 uiLaptopMode, UINT32 uiWWWMode)
+{
+	guiCurrentLaptopMode = static_cast<LaptopMode>(uiLaptopMode);
+	guiCurrentWWWMode = static_cast<LaptopMode>(uiWWWMode);
 }

@@ -223,6 +223,12 @@ extern Observable<INT8, INT16, BOOLEAN> OnItemTransacted;
  */
 extern Observable<INT8, UINT16, BOOLEAN, UINT32_S*> OnItemPriced;
 
+/**
+ * Called when we are about to go to a web page on the Laptop.
+ * @param iPageId ID of the page we want to go to
+ */
+extern Observable<INT32> OnGoToWebPage;
+
 /** @defgroup funclib-sectors Map sectors
  *  @brief Access and alter sectors' stratgic-level data
  */
@@ -359,6 +365,13 @@ void AddEmailMessage(INT32 iMessageOffset, INT32 iMessageLength, INT32 iDate, UI
 void SetBookMark(INT32 iBookId);
 void AddTransactionToPlayersBook(UINT8 ubCode, UINT8 ubSecondCode, UINT32 uiDate, INT32 iAmount);
 void AddHistoryToPlayersLog(UINT8 ubCode, UINT8 ubSecondCode, UINT32 uiDate, INT16 sSectorX, INT16 sSectorY);
+
+/**
+ * Sets the current laptop and WWW modes.
+ * @param uiLaptopMode
+ * @param uiWWWMode
+ */
+void SetLaptopModes(UINT32 uiLaptopMode, UINT32 uiWWWMode);
 
 /**
  * Retrieves a key-value mapping from saved game states.

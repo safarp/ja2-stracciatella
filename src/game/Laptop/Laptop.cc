@@ -186,7 +186,7 @@ LaptopMode        guiCurrentLaptopMode;
 LaptopMode        guiPreviousLaptopMode;
 // Used to prevent double free problems. Fixes Stracciatella issue #68:
 LaptopMode        guiLastExitedLaptopMode = LAPTOP_MODE_NONE;
-static LaptopMode guiCurrentWWWMode = LAPTOP_MODE_NONE;
+LaptopMode guiCurrentWWWMode = LAPTOP_MODE_NONE;
 INT32  giCurrentSubPage;
 
 
@@ -315,6 +315,8 @@ static MOUSE_REGION gNewFileIconRegion;
 
 //used for global variables that need to be saved
 LaptopSaveInfoStruct LaptopSaveInfo;
+
+Observable<INT32> OnGoToWebPage = {};
 
 
 BOOLEAN fReDrawScreenFlag=FALSE;
@@ -1856,13 +1858,17 @@ void GoToWebPage(INT32 iPageId)
 			guiCurrentLaptopMode = LAPTOP_MODE_INSURANCE;
 			break;
 
-		default: return;
+		default:
+			OnGoToWebPage(iPageId);
+			return;
 	}
 
 	// do we have to have a World Wide Wait
 	fFastLoadFlag = LaptopSaveInfo.fVisitedBookmarkAlready[iPageId];
 	LaptopSaveInfo.fVisitedBookmarkAlready[iPageId] = TRUE;
 	fLoadPendingFlag = TRUE;
+
+	OnGoToWebPage(iPageId);
 }
 
 

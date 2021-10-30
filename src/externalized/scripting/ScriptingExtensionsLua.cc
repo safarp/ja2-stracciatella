@@ -181,7 +181,8 @@ static void RegisterUserTypes()
 		"fEnemyInSector", &TacticalStatusType::fEnemyInSector,
 		"fDidGameJustStart", &TacticalStatusType::fDidGameJustStart,
 		"uiFlags", &TacticalStatusType::uiFlags,
-		"fEnemyFlags", &TacticalStatusType::fEnemyFlags
+		"fEnemyFlags", &TacticalStatusType::fEnemyFlags,
+		"bMercArrivingQuoteBeingUsed", &TacticalStatusType::bMercArrivingQuoteBeingUsed
 		);
 
 	lua.new_usertype<STRATEGICEVENT>("STRATEGICEVENT",
@@ -392,6 +393,7 @@ static void RegisterGlobals()
 	lua.set_function("SetBookMark", SetBookMark);
 	lua.set_function("AddTransactionToPlayersBook", AddTransactionToPlayersBook);
 	lua.set_function("AddHistoryToPlayersLog", AddHistoryToPlayersLog);
+	lua.set_function("SetLaptopModes", SetLaptopModes);
 
 	lua.set_function("TriggerNPCRecord", TriggerNPCRecord);
 	lua.set_function("StrategicNPCDialogue", StrategicNPCDialogue);
@@ -507,6 +509,7 @@ static void _RegisterListener(const std::string& observable, const std::string& 
 	else if (observable == "OnDealerInventoryUpdated")   OnDealerInventoryUpdated.addListener(key, wrap<>(luaFunc));
 	else if (observable == "OnItemTransacted")           OnItemTransacted.addListener(key, wrap<INT8, UINT16, BOOLEAN>(luaFunc));
 	else if (observable == "OnItemPriced")               OnItemPriced.addListener(key, wrap<INT8, UINT16, BOOLEAN, UINT32_S*>(luaFunc));
+	else if (observable == "OnGoToWebPage")              OnGoToWebPage.addListener(key, wrap<INT32>(luaFunc));
 	else {
 		ST::string err = ST::format("There is no observable named '{}'", observable);
 		throw std::logic_error(err.to_std_string());
