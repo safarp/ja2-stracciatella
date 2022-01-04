@@ -34,6 +34,13 @@ if [[ "$CI_TARGET" == "linux" ]]; then
     # Appimage build tools (linuxdeploy and appimagelint)
     linux-install-appimage-build-tools
 elif [[ "$CI_TARGET" == "linux-mingw64" ]]; then
+
+    ## package target is broken on since CMake 3.22.0
+    curl -sL https://cmake.org/files/v3.21/cmake-3.21.4-linux-x86_64.sh -o cmakeinstall.sh \
+        && chmod +x cmakeinstall.sh \
+        && sudo ./cmakeinstall.sh --prefix=/usr/local --exclude-subdir \
+        && rm cmakeinstall.sh
+
     GCC_VER="${TARGET_GCC_MAJOR_VERSION:-8}"
 
     # MinGW compiler for cross-compiling
