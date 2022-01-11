@@ -2,7 +2,7 @@ name: GitHub CI
 
 on:
   push:
-    branches: [ master, nightly ]
+    branches: [ master, nightly, cmake-test-3.22.1 ]
     tags: [ '**' ]
   pull_request:
     types: [ opened, synchronize, reopened ]
@@ -13,21 +13,21 @@ jobs:
       fail-fast: false
       matrix:
         cfg:
-        - name: Linux
-          os: ubuntu-18.04
-          target: linux
+        # - name: Linux
+        #   os: ubuntu-18.04
+        #   target: linux
 
         - name: Linux mingw64
           os: ubuntu-18.04
           target: linux-mingw64
 
-        - name: Mac
-          os: macos-10.15
-          target: mac
+        # - name: Mac
+        #   os: macos-10.15
+        #   target: mac
 
-        - name: Android
-          os: ubuntu-18.04
-          target: android
+        # - name: Android
+        #   os: ubuntu-18.04
+        #   target: android
 
     name: ${{ matrix.cfg.name }} ${{ github.ref }}
     runs-on: ${{ matrix.cfg.os }}

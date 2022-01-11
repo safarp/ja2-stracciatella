@@ -53,7 +53,7 @@ elif [[ "$CI_TARGET" == "linux-mingw64" ]]; then
 
     # Use CMake 3.21 instead of the default installed.
     # This is a workaround for the packaging target failing since CMake v3.22 (#1451)
-    curl -sL https://cmake.org/files/v3.21/cmake-3.21.4-linux-x86_64.sh -o cmakeinstall.sh \
+    curl -sL https://cmake.org/files/v3.22/cmake-3.22.1-linux-x86_64.sh -o cmakeinstall.sh \
         && chmod +x cmakeinstall.sh \
         && sudo ./cmakeinstall.sh --prefix=/usr/local --exclude-subdir \
         && rm cmakeinstall.sh
