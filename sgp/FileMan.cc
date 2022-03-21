@@ -9,12 +9,10 @@
 #include "LibraryDataBase.h"
 #include "MemMan.h"
 #include "PODObj.h"
-#include "Logger.h"
 
 #include "boost/filesystem.hpp"
 
 #include "slog/slog.h"
-#define TAG "FileMan"
 
 #if _WIN32
 #include <shlobj.h>
@@ -23,6 +21,7 @@
 #endif
 
 #include "PlatformIO.h"
+#include "Debug.h"
 
 #if MACOS_USE_RESOURCES_FROM_BUNDLE && defined __APPLE__  && defined __MACH__
 #include <CoreFoundation/CFBundle.h>
@@ -30,11 +29,15 @@
 
 #if CASE_SENSITIVE_FS
 #include <dirent.h>
+#include <SDL_rwops.h>
 #endif
 
 // XXX: remove FileMan class and make it into a namespace
 
 #define LOCAL_CURRENT_DIR "tmp"
+#define SDL_RWOPS_SGP 222
+
+#define DEBUG_TAG_FILEMAN "Fileman"
 
 enum FileOpenFlags
 {
@@ -117,18 +120,23 @@ std::string FileMan::findConfigFolderAndSwitchIntoIt()
 
 	if (mkdir(configFolderPath.c_str(), 0700) != 0 && errno != EEXIST)
 	{
-    LOG_ERROR("Unable to create directory '%s'\n", configFolderPath.c_str());
+    SLOGE(DEBUG_TAG_FILEMAN, "Unable to create tmp directory '%s'", configFolderPath.c_str());
 		throw std::runtime_error("Unable to local directory");
 	}
+	return switchTmpFolder(configFolderPath);
+}
 
+/** Switch config folder. */
+std::string FileMan::switchTmpFolder(std::string home)
+{
   // Create another directory and set is as the current directory for the process
   // Temporary files will be created in this directory.
   // ----------------------------------------------------------------------------
 
-  std::string tmpPath = FileMan::joinPaths(configFolderPath, LOCAL_CURRENT_DIR);
+  std::string tmpPath = FileMan::joinPaths(home, LOCAL_CURRENT_DIR);
 	if (mkdir(tmpPath.c_str(), 0700) != 0 && errno != EEXIST)
 	{
-    LOG_ERROR("Unable to create tmp directory '%s'\n", tmpPath.c_str());
+    SLOGE(DEBUG_TAG_FILEMAN, "Unable to create tmp directory '%s'", tmpPath.c_str());
 		throw std::runtime_error("Unable to create tmp directory");
 	}
   else
@@ -136,7 +144,7 @@ std::string FileMan::findConfigFolderAndSwitchIntoIt()
     SetFileManCurrentDirectory(tmpPath.c_str());
   }
 
-  return configFolderPath;
+  return home;
 }
 
 
@@ -237,19 +245,8 @@ void FileClose(SGPFile* f)
 	MemFree(f);
 }
 
-
-#ifdef JA2TESTVERSION
-#	include "Timer_Control.h"
-extern UINT32 uiTotalFileReadTime;
-extern UINT32 uiTotalFileReadCalls;
-#endif
-
 void FileRead(SGPFile* const f, void* const pDest, size_t const uiBytesToRead)
 {
-#ifdef JA2TESTVERSION
-	const UINT32 uiStartTime = GetJA2Clock();
-#endif
-
 	BOOLEAN ret;
 	if (f->flags & SGPFILE_REAL)
 	{
@@ -259,12 +256,6 @@ void FileRead(SGPFile* const f, void* const pDest, size_t const uiBytesToRead)
 	{
 		ret = LoadDataFromLibrary(&f->u.lib, pDest, (UINT32)uiBytesToRead);
 	}
-
-#ifdef JA2TESTVERSION
-	//Add the time that we spent in this function to the total.
-	uiTotalFileReadTime += GetJA2Clock() - uiStartTime;
-	uiTotalFileReadCalls++;
-#endif
 
 	if (!ret) throw std::runtime_error("Reading from file failed");
 }
@@ -276,6 +267,80 @@ void FileWrite(SGPFile* const f, void const* const pDest, size_t const uiBytesTo
 	if (fwrite(pDest, uiBytesToWrite, 1, f->u.file) != 1) throw std::runtime_error("Writing to file failed");
 }
 
+static int64_t SGPSeekRW(SDL_RWops *context, int64_t offset, int whence)
+{
+	SGPFile* sgpFile = (SGPFile*)(context->hidden.unknown.data1);
+	FileSeekMode mode = FILE_SEEK_FROM_CURRENT;
+	switch (whence) {
+		case RW_SEEK_SET:
+			mode = FILE_SEEK_FROM_START;
+			break;
+		case RW_SEEK_END:
+			mode = FILE_SEEK_FROM_END;
+			break;
+		default:
+			break;
+	}
+
+	FileSeek(sgpFile, offset, mode);
+
+	return int64_t(FileGetPos(sgpFile));
+}
+
+static int64_t SGPSizeRW(SDL_RWops *context)
+{
+	SGPFile* sgpFile = (SGPFile*)(context->hidden.unknown.data1);
+
+	return FileGetSize(sgpFile);
+}
+
+static size_t SGPReadRW(SDL_RWops *context, void *ptr, size_t size, size_t maxnum)
+{
+	SGPFile* sgpFile = (SGPFile*)(context->hidden.unknown.data1);
+	UINT32 posBefore = UINT32(FileGetPos(sgpFile));
+
+	FileRead(sgpFile, ptr, size * maxnum);
+
+	UINT32 posAfter = UINT32(FileGetPos(sgpFile));
+
+	return (posAfter - posBefore) / size;
+}
+
+static size_t SGPWriteRW(SDL_RWops *context, const void *ptr, size_t size, size_t num)
+{
+	AssertMsg(false, "SGPWriteRW not supported");
+	return 0;
+}
+
+static int SGPCloseRW(SDL_RWops *context)
+{
+	if(context->type != SDL_RWOPS_SGP)
+	{
+		return SDL_SetError("Wrong kind of SDL_RWops for SGPCloseRW()");
+	}
+	SGPFile* sgpFile = (SGPFile*)(context->hidden.unknown.data1);
+
+	FileClose(sgpFile);
+	SDL_FreeRW(context);
+
+	return 0;
+}
+
+SDL_RWops* FileGetRWOps(SGPFile* const f) {
+	SDL_RWops* rwOps = SDL_AllocRW();
+	if(rwOps == NULL) {
+		return NULL;
+	}
+	rwOps->type = SDL_RWOPS_SGP;
+	rwOps->size = SGPSizeRW;
+	rwOps->seek = SGPSeekRW;
+	rwOps->read = SGPReadRW;
+	rwOps->write= SGPWriteRW;
+	rwOps->close= SGPCloseRW;
+	rwOps->hidden.unknown.data1 = f;
+
+	return rwOps;
+}
 
 void FileSeek(SGPFile* const f, INT32 distance, FileSeekMode const how)
 {
@@ -397,63 +462,36 @@ BOOLEAN FileClearAttributes(const std::string &filename)
 
 BOOLEAN FileClearAttributes(const char* const filename)
 {
-#if 1 // XXX TODO
-  SLOGW(TAG, "ignoring %s(\"%s\")", __func__, filename);
-	return FALSE;
-	// UNIMPLEMENTED
-#else
-	return SetFileAttributes(filename, FILE_ATTRIBUTE_NORMAL);
-#endif
+	using namespace boost::filesystem;
+
+	permissions(filename, ( add_perms | owner_read | owner_write | group_read | group_write ));
+	return true;
 }
 
 
-BOOLEAN GetFileManFileTime(const SGPFile* f, SGP_FILETIME* const pCreationTime, SGP_FILETIME* const pLastAccessedTime, SGP_FILETIME* const pLastWriteTime)
+BOOLEAN GetFileManFileTime(const char* fileName, time_t* const pLastWriteTime)
 {
-#if 1 // XXX TODO
-	UNIMPLEMENTED;
-  return FALSE;
-#else
-	//Initialize the passed in variables
-	memset(pCreationTime,     0, sizeof(*pCreationTime));
-	memset(pLastAccessedTime, 0, sizeof(*pLastAccessedTime));
-	memset(pLastWriteTime,    0, sizeof(*pLastWriteTime));
-
-	if (f->flags & SGPFILE_REAL)
+	using namespace boost::filesystem;
+	*pLastWriteTime = last_write_time(fileName);
+	if(*pLastWriteTime == -1)
 	{
-		const HANDLE hRealFile = f->u.file;
-
-		//Gets the UTC file time for the 'real' file
-		SGP_FILETIME sCreationUtcFileTime;
-		SGP_FILETIME sLastAccessedUtcFileTime;
-		SGP_FILETIME sLastWriteUtcFileTime;
-		GetFileTime(hRealFile, &sCreationUtcFileTime, &sLastAccessedUtcFileTime, &sLastWriteUtcFileTime);
-
-		//converts the creation UTC file time to the current time used for the file
-		FileTimeToLocalFileTime(&sCreationUtcFileTime, pCreationTime);
-
-		//converts the accessed UTC file time to the current time used for the file
-		FileTimeToLocalFileTime(&sLastAccessedUtcFileTime, pLastAccessedTime);
-
-		//converts the write UTC file time to the current time used for the file
-		FileTimeToLocalFileTime(&sLastWriteUtcFileTime, pLastWriteTime);
-		return TRUE;
+		return FALSE;
 	}
-	else
-	{
-		return GetLibraryFileTime(&f->u.lib, pLastWriteTime);
-	}
-#endif
+	return TRUE;
 }
 
 
-INT32	CompareSGPFileTimes(const SGP_FILETIME* const pFirstFileTime, const SGP_FILETIME* const pSecondFileTime)
+INT32 CompareSGPFileTimes(const time_t* const pFirstFileTime, const time_t* const pSecondFileTime)
 {
-#if 1 // XXX TODO
-	UNIMPLEMENTED;
-  return 0;
-#else
-	return CompareFileTime(pFirstFileTime, pSecondFileTime);
-#endif
+	if ( *pFirstFileTime < *pSecondFileTime )
+	{
+		return -1;
+	}
+	if ( *pFirstFileTime > *pSecondFileTime )
+	{
+		return 1;
+	}
+	return 0;
 }
 
 
@@ -462,19 +500,19 @@ FILE* GetRealFileHandleFromFileManFileHandle(const SGPFile* f)
 	return f->flags & SGPFILE_REAL ? f->u.file : f->u.lib.lib->hLibraryHandle;
 }
 
-UINT32 GetFreeSpaceOnHardDriveWhereGameIsRunningFrom(void)
+uintmax_t GetFreeSpaceOnHardDriveWhereGameIsRunningFrom(void)
 {
-#if 1 // XXX TODO
-	FIXME
-	return 1024 * 1024 * 1024; // XXX TODO return an arbitrary number for now
-#else
-	//get the drive letter from the exec dir
-  STRING512 zDrive;
-	_splitpath(GetExecutableDirectory(), zDrive, NULL, NULL, NULL);
-
-	sprintf(zDrive, "%s\\", zDrive);
-	return GetFreeSpaceOnHardDrive(zDrive);
-#endif
+	using namespace boost::filesystem;
+	space_info si = space(current_path());
+	if (si.available == -1)
+	{
+		/* something is wrong, tell everyone no space available */
+		return 0;
+	}
+	else
+	{
+		return si.available;
+	}
 }
 
 /** Join two path components. */
@@ -562,7 +600,7 @@ bool FileMan::findObjectCaseInsensitive(const char *directory, const char *name,
     }
   }
 
-  // LOG_INFO("XXXXX Looking for %s/[ %s ] : %s\n", directory, name, result ? "success" : "failure");
+  // SLOGI(DEBUG_TAG_FILEMAN,"Looking for %s/[ %s ] : %s", directory, name, result ? "success" : "failure");
   return result;
 }
 #endif
@@ -819,4 +857,11 @@ bool FileMan::checkFileExistance(const char *folder, const char *fileName)
   boost::filesystem::path path(folder);
   path /= fileName;
   return boost::filesystem::exists(path);
+}
+
+void FileMan::moveFile(const char *from, const char *to)
+{
+	boost::filesystem::path fromPath(from);
+	boost::filesystem::path toPath(to);
+	boost::filesystem::rename(fromPath, toPath);
 }

@@ -38,11 +38,17 @@ CFLAGS += -DGAME_VERSION=\"$(GAME_VERSION)\"
 
 
 ifdef LOCAL_SDL_LIB
-CFLAGS_SDL= -I./$(LOCAL_SDL_LIB)/include/SDL -D_GNU_SOURCE=1 -Dmain=SDL_main
-LDFLAGS_SDL=-L./$(LOCAL_SDL_LIB)/lib -lmingw32 -lSDLmain -lSDL -mwindows
+CFLAGS_SDL= -I./$(LOCAL_SDL_LIB)/include/SDL2 -D_GNU_SOURCE=1 -Dmain=SDL_main
+LDFLAGS_SDL=-L./$(LOCAL_SDL_LIB)/lib -lmingw32 -lSDL2main -lSDL2 -mwindows
 endif
 
 ifndef LOCAL_SDL_LIB
+
+# using Serenity SDL2 library
+ifdef SERENITY
+CFLAGS_SDL= -I${SERENITY_BUILD_DIR}/Root/usr/local/include/SDL2 -D_REENTRANT
+LDFLAGS_SDL= -L${SERENITY_BUILD_DIR}/Root/usr/local/lib -lSDL2
+endif
 
 # using system SDL library
 
@@ -156,6 +162,7 @@ CCFLAGS += -Wimplicit-int
 CCFLAGS += -Wmissing-prototypes
 
 CXXFLAGS += $(CFLAGS)
+CXXFLAGS += -std=c++11
 
 LDFLAGS += -lm
 
@@ -723,10 +730,10 @@ build-on-mac:
 	make "CFLAGS_SDL=$(MACOS_STATIC_CFLAGS_SDL)" "LDFLAGS_SDL=$(MACOS_STATIC_LDFLAGS_SDL)"
 
 build-on-win:
-	PATH=/cygdrive/c/MinGW/bin:$$PATH make all USE_MINGW=1 MINGW_PREFIX=/cygdrive/c/MinGW/bin/mingw32 LOCAL_SDL_LIB=_build/lib-SDL-devel-1.2.15-mingw32
+	PATH=/cygdrive/c/MinGW/bin:$$PATH make all USE_MINGW=1 MINGW_PREFIX=/cygdrive/c/MinGW/bin/mingw32 LOCAL_SDL_LIB=_build/lib-SDL2-2.0.4-mingw/i686-w64-mingw32 WITH_LPTHREAD=0
 	cp /cygdrive/c/MinGW/bin/libstdc++-6.dll .
 	cp /cygdrive/c/MinGW/bin/libgcc_s_dw2-1.dll .
-	cp _build/lib-SDL-devel-1.2.15-mingw32/bin/SDL.dll .
+	cp _build/lib-SDL2-2.0.4-mingw/i686-w64-mingw32/bin/SDL2.dll .
 
 SOURCE_DIR_NAME := ja2-stracciatella_$(VERSION)
 build-source-archive:

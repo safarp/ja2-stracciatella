@@ -230,7 +230,7 @@ static void GetPlayerKeyBoardInputForIMPHomePage(void)
 	InputAtom					InputEvent;
 	while (DequeueEvent(&InputEvent))
   {
-		if(	!HandleTextInput( &InputEvent ) && (InputEvent.usEvent == KEY_DOWN || InputEvent.usEvent == KEY_REPEAT || InputEvent.usEvent == KEY_UP ) )
+		if(	!HandleTextInput( &InputEvent ) && (InputEvent.usEvent == TEXT_INPUT || InputEvent.usEvent == KEY_DOWN || InputEvent.usEvent == KEY_REPEAT || InputEvent.usEvent == KEY_UP ) )
 		{
 		  switch( InputEvent.usParam )
 			{
@@ -247,7 +247,7 @@ static void GetPlayerKeyBoardInputForIMPHomePage(void)
 				case SDLK_ESCAPE: HandleLapTopESCKey(); break;
 
 				default:
-					if(InputEvent.usEvent == KEY_DOWN || InputEvent.usEvent == KEY_REPEAT )
+					if(InputEvent.usEvent == TEXT_INPUT)
 					{
 						HandleTextEvent(&InputEvent);
 					}
